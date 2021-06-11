@@ -2,10 +2,9 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      lorem:
-        description: 'Lorem ipsum'
-        required: false
-        default: 'ipsum'
+      issuekey:
+        description: 'Jira issue key used also in Pull Request'
+        required: true
 
 
 jobs:
@@ -17,11 +16,18 @@ jobs:
       # you must check out the repository
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Hello world action step
-        uses: ./ # Uses an action in the root directory
+      - name: Login
+        uses: atlassian/gajira-login@master
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+      - name: Get Jira issue
+        uses: ./
         id: hello
         with:
-          who-to-greet: 'Mona the Octocat'
+          issuekey: ${{ github.event.inputs.issuekey }}
       # Use the output from the `hello` step
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+      - name: Get the output jira issue
+        run: echo "${{ steps.hello.outputs.issue }}"

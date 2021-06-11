@@ -1,13 +1,15 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: Jira Find issue key
+description: Find an issue inside event
+branding:
+  icon: 'book-open'
+  color: 'blue'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  issuekey:
+    description: issue key
     required: true
-    default: 'World'
 outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  issue:
+    description: Jira issue
 runs:
   using: 'node12'
-  main: 'index.js'
+  main: './dist/index.js'
