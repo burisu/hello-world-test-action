@@ -1,5 +1,5 @@
 // const _ = require('lodash')
-const Jira = require('./jira/Jira')
+const Jira = require('./jira/jira')
 
 const issueIdRegEx = /([a-zA-Z0-9]+-[0-9]+)/g
 module.exports = class {
