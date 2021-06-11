@@ -21,10 +21,8 @@ class Jira {
           expand: expand.join(','),
         },
       })
-      console.log(res)
       return res
     } catch (error) {
-      console.log(error)
       if (get(error, 'res.status') === 404) {
         return
       }
@@ -41,7 +39,6 @@ class Jira {
       pathname,
       query,
     })
-    console.log(url)
 
     if (!method) {
       method = 'GET'
