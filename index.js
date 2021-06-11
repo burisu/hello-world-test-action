@@ -18,12 +18,13 @@ async function exec() {
       config,
     }).execute()
 
+    console.log(result)
+
     if (result) {
       console.log(`Detected issueKey: ${result.issue}`)
       console.log(`Saving ${result.issue} to ${cliConfigPath}`)
       console.log(`Saving ${result.issue} to ${configPath}`)
 
-      // Expose created issue's key as an output
       core.setOutput('issue', result.issue)
 
       const yamledResult = YAML.stringify(result)
