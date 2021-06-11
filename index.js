@@ -1,50 +1,27 @@
-const fs = require('fs')
-const YAML = require('yaml')
 const core = require('@actions/core')
-
-const cliConfigPath = `${process.env.HOME}/.jira.d/config.yml`
-const configPath = `${process.env.HOME}/jira/config.yml`
-const Action = require('./action')
-
-// eslint-disable-next-line import/no-dynamic-require
-const githubEvent = require(process.env.GITHUB_EVENT_PATH)
-const config = YAML.parse(fs.readFileSync(configPath, 'utf8'))
+const github = require('@actions/github')
 
 async function exec() {
-  try {
-    const result = await new Action({
-      githubEvent,
-      argv: parseArgs(),
-      config,
-    }).execute()
+  const token = core.getInput('token')
+  const octokit = github.getOctokit(token)
 
-    console.log(result)
-
-    if (result) {
-      console.log(`Detected issueKey: ${result.issue}`)
-      console.log(`Saving ${result.issue} to ${cliConfigPath}`)
-      console.log(`Saving ${result.issue} to ${configPath}`)
-
-      core.setOutput('issue', result.issue)
-
-      const yamledResult = YAML.stringify(result)
-      const extendedConfig = Object.assign({}, config, result)
-
-      fs.writeFileSync(configPath, YAML.stringify(extendedConfig))
-
-      return fs.appendFileSync(cliConfigPath, yamledResult)
+  const result = await octokit.graphql(`
+    {
+      repository(owner: "pedraalcorp", name: "hello-world-test-action") {
+        pullRequests(last: 100, states:OPEN) {
+          nodes {
+            title
+            headRefName
+            mergeable
+            reviewDecision
+          }
+        }
+      }
     }
+  `)
 
-    console.log('No issue found.')
-  } catch (error) {
-    core.setFailed(error.toString())
-  }
-}
 
-function parseArgs() {
-  return {
-    issuekey: core.getInput('issuekey')
-  }
+  console.log(result)
 }
 
 exec()

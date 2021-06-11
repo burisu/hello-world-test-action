@@ -1,15 +1,15 @@
-name: Jira Find issue key
-description: Find an issue inside event
+name: Get Pull Request
+description: Find a pull request with a Jira issue key
 branding:
   icon: 'book-open'
   color: 'blue'
 inputs:
-  issuekey:
-    description: issue key
+  token:
+    description: Github token
     required: true
 outputs:
-  issue:
-    description: Jira issue
+  branch:
+    description: Branch of the pull request
 runs:
   using: 'node12'
   main: './index.js'

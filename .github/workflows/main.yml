@@ -13,19 +13,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Login
-        uses: atlassian/gajira-login@master
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-      - name: Find in commit messages
-        uses: atlassian/gajira-find-issue-key@master
-        id: find
+      - name:
+        uses: ./
         with:
-          string: ${{ github.event.inputs.issuekey }}
-      - name: Transition issue
-        uses: atlassian/gajira-transition@master
-        with:
-          issue: ${{ steps.find.outputs.issue }}
-          transition: "EN COURS"
+          token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Login
+      #   uses: atlassian/gajira-login@master
+      #   env:
+      #     JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      #     JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+      #     JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      # - name: Find in commit messages
+      #   uses: atlassian/gajira-find-issue-key@master
+      #   id: find
+      #   with:
+      #     string: ${{ github.event.inputs.issuekey }}
+      # - name: Transition issue
+      #   uses: atlassian/gajira-transition@master
+      #   with:
+      #     issue: ${{ steps.find.outputs.issue }}
+      #     transition: "EN COURS"
