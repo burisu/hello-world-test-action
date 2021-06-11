@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       issuekey:
-        description: 'Jira issue key used also in Pull Request'
+        description: 'Jira issue key associated to Pull Request'
         required: true
 
 jobs:

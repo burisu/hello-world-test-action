@@ -7,6 +7,9 @@ inputs:
   token:
     description: Github token
     required: true
+  issuekey:
+    description: Jira issue key
+    required: true
 outputs:
   branch:
     description: Branch of the pull request
