@@ -16,7 +16,6 @@ module.exports = class {
   }
 
   async execute() {
-    console.log(await this.Jira.getIssue(this.argv.issuekey))
     return await this.Jira.getIssue(this.argv.issuekey)
   }
 }

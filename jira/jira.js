@@ -13,7 +13,7 @@ class Jira {
 
   async getIssue(issueId, query = {}) {
     const { fields = [], expand = [] } = query
-
+    console.log('test')
     try {
       const res = await this.fetch('getIssue', {
         pathname: `/rest/api/2/issue/${issueId}`,
