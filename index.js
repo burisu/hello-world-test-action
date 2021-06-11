@@ -21,7 +21,7 @@ async function exec() {
   `)
 
 
-  console.log(result)
+  console.log(result.repository.pullRequests.nodes)
 }
 
 exec()
