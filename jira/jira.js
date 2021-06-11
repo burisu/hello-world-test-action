@@ -13,7 +13,6 @@ class Jira {
 
   async getIssue(issueId, query = {}) {
     const { fields = [], expand = [] } = query
-    console.log('test')
     try {
       const res = await this.fetch('getIssue', {
         pathname: `/rest/api/2/issue/${issueId}`,
@@ -25,6 +24,7 @@ class Jira {
       console.log(res)
       return res
     } catch (error) {
+      console.log(error)
       if (get(error, 'res.status') === 404) {
         return
       }
@@ -41,6 +41,7 @@ class Jira {
       pathname,
       query,
     })
+    console.log(url)
 
     if (!method) {
       method = 'GET'
