@@ -1,4 +1,12 @@
-on: [push]
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      lorem:
+        description: 'Lorem ipsum'
+        required: false
+        default: 'ipsum'
+
 
 jobs:
   hello_world_job:
