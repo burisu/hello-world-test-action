@@ -42,7 +42,7 @@ async function exec() {
 
 function parseArgs() {
   return {
-    string: core.getInput('string')
+    issuekey: core.getInput('issuekey')
   }
 }
 
