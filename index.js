@@ -5,24 +5,6 @@ async function exec() {
   const token = core.getInput('token')
   const octokit = github.getOctokit(token)
   const issueKey = core.getInput('issueKey')
-  const context = github.context
-  // console.log(context)
-
-  // const pullResults = await octokit.graphql(`
-  //   {
-  //     repository(owner: "pedraalcorp", name: "hello-world-test-action") {
-  //       pullRequests(last: 100, states:OPEN) {
-  //         nodes {
-  //           title
-  //           headRefName
-  //           mergeable
-  //           reviewDecision
-  //         }
-  //       }
-  //     }
-  //   }
-  // `)
-  // console.log(pullResults.repository.pullRequests.nodes)
 
   const searchResult = await octokit.graphql(`
     query targetPullRequest($queryString: String!) {
@@ -41,9 +23,11 @@ async function exec() {
     }
   `,
     {
-    queryString: `is:pr ${issueKey} in:title repo:${context.payload.repository.full_name}`
+    queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
   })
   console.log(searchResult.search.nodes[0])
+
+  core.setOutput('targetBranch', searchResult.search.nodes[0].headRefName)
 }
 
 exec()

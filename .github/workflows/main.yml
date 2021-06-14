@@ -2,7 +2,7 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      issuekey:
+      issueKey:
         description: 'Jira issue key associated to Pull Request'
         required: true
 
@@ -17,7 +17,15 @@ jobs:
         uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          issuekey: ${{ github.context.payload.inputes.issuekey }}
+          issueKey: ${{ github.context.payload.inputes.issueKey }}
+
+      # - name: Merge development -> staging
+      #   uses: devmasx/merge-branch@v1.3.1
+      #   with:
+      #     type: now
+      #     from_branch: development
+      #     target_branch: staging
+      #     github_token: ${{ github.token }}
       # - name: Login
       #   uses: atlassian/gajira-login@master
       #   env:
