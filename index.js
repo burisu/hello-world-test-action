@@ -33,6 +33,8 @@ async function exec() {
             headRefName
             mergeable
             reviewDecision
+            checksResourcePath
+            checksUrl
           }
         }
       }
