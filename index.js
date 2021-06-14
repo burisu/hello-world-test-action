@@ -8,11 +8,27 @@ async function exec() {
   const context = github.context
   console.log(context)
 
-  const pullResults = await octokit.graphql(`
-    {
-      repository(owner: "pedraalcorp", name: "hello-world-test-action") {
-        pullRequests(last: 100, states:OPEN) {
-          nodes {
+  // const pullResults = await octokit.graphql(`
+  //   {
+  //     repository(owner: "pedraalcorp", name: "hello-world-test-action") {
+  //       pullRequests(last: 100, states:OPEN) {
+  //         nodes {
+  //           title
+  //           headRefName
+  //           mergeable
+  //           reviewDecision
+  //         }
+  //       }
+  //     }
+  //   }
+  // `)
+  // console.log(pullResults.repository.pullRequests.nodes)
+
+  const searchResult = await octokit.graphql(`
+    query targetPullRequest($query: String!) {
+      search(last: 1, query: $query, type: ISSUE) {
+        nodes {
+          ... on PullRequest {
             title
             headRefName
             mergeable
@@ -21,20 +37,10 @@ async function exec() {
         }
       }
     }
-  `)
-  console.log(pullResults.repository.pullRequests.nodes)
-
-  const searchResult = await octokit.graphql(`
+  `,
     {
-      search(last: 1, query: "is:pr ${issueKey} in:title repo:${context.payload.repository.full_name}", type: ISSUE) {
-        nodes {
-          ... on PullRequest {
-            title
-          }
-        }
-      }
-    }
-  `)
+    query: `is:pr ${issueKey} in:title repo:${context.payload.repository.full_name}`
+  })
   console.log(searchResult.search.nodes[0])
 }
 
