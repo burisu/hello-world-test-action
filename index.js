@@ -26,9 +26,9 @@ async function exec() {
 
   const searchResult = await octokit.graphql(`
     {
-      search(last: 1, query: "is:pr ${issueKey} in:title", type: ISSUE) {
+      search(last: 1, query: "is:pr ${issueKey} in:title repo:${context.repository.full_name}", type: ISSUE) {
         nodes {
-          ... on Issue {
+          ... on PullRequest {
             title
           }
         }
