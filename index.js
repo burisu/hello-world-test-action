@@ -13,6 +13,7 @@ async function exec() {
           ... on PullRequest {
             title
             headRefName
+            baseRefName
             mergeable
             reviewDecision
             checksResourcePath
@@ -24,10 +25,13 @@ async function exec() {
   `,
     {
     queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
-  })
-  console.log(searchResult.search.nodes[0])
-
-  core.setOutput('targetBranch', searchResult.search.nodes[0].headRefName)
+    })
+  const pullRequest = searchResult.search.nodes[0]
+  if (!(pullRequest.mergeable === 'MERGEABLE' && pullRequest.reviewDecision === 'APPROVED')) {
+    throw new Error('Pull Request is not ready for merging')
+  }
+  core.setOutput('targetBranch', pullRequest.headRefName)
+  core.setOutput('canProceed', pullRequest.mergeable)
 }
 
 exec()

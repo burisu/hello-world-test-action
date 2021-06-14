@@ -5,6 +5,8 @@ on:
       issueKey:
         description: 'Jira issue key associated to Pull Request'
         required: true
+      mergeIn:
+        description: 'The branch where the Pull Request should be merged'
 
 jobs:
   jira_workflow:
@@ -15,16 +17,17 @@ jobs:
         uses: actions/checkout@v2
       - name:
         uses: ./
+        id: findBranch
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          issueKey: ${{ github.context.payload.inputes.issueKey }}
+          issueKey: ${{ github.context.payload.inputs.issueKey }}
 
       # - name: Merge development -> staging
       #   uses: devmasx/merge-branch@v1.3.1
       #   with:
       #     type: now
-      #     from_branch: development
-      #     target_branch: staging
+      #     from_branch: ${{ steps.findBranch.outputs.targetBranch }}
+      #     target_branch: ${{ github.context.payload.inputs.mergeIn }}
       #     github_token: ${{ github.token }}
       # - name: Login
       #   uses: atlassian/gajira-login@master
