@@ -6,7 +6,7 @@ async function exec() {
   const octokit = github.getOctokit(token)
   const issueKey = core.getInput('issueKey')
   const context = github.context
-  console.log(context)
+  // console.log(context)
 
   // const pullResults = await octokit.graphql(`
   //   {
@@ -25,8 +25,8 @@ async function exec() {
   // console.log(pullResults.repository.pullRequests.nodes)
 
   const searchResult = await octokit.graphql(`
-    query targetPullRequest($query: String!) {
-      search(last: 1, query: $query, type: ISSUE) {
+    query targetPullRequest($queryString: String!) {
+      search(last: 1, query: $queryString, type: ISSUE) {
         nodes {
           ... on PullRequest {
             title
@@ -39,7 +39,7 @@ async function exec() {
     }
   `,
     {
-    query: `is:pr ${issueKey} in:title repo:${context.payload.repository.full_name}`
+    queryString: `is:pr ${issueKey} in:title repo:${context.payload.repository.full_name}`
   })
   console.log(searchResult.search.nodes[0])
 }
