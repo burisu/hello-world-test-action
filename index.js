@@ -4,11 +4,11 @@ const github = require('@actions/github')
 async function exec() {
   const token = core.getInput('token')
   const octokit = github.getOctokit(token)
-
+  const issueKey = core.getInput('issueKey')
   const context = github.context
   console.log(context)
 
-  const result = await octokit.graphql(`
+  const pullResults = await octokit.graphql(`
     {
       repository(owner: "pedraalcorp", name: "hello-world-test-action") {
         pullRequests(last: 100, states:OPEN) {
@@ -22,7 +22,18 @@ async function exec() {
       }
     }
   `)
-  console.log(result.repository.pullRequests.nodes)
+  console.log(pullResults.repository.pullRequests.nodes)
+
+  const searchResult = await octokit.graphql(`
+    {
+      search(last: 1, query: "is:pr ${issueKey} in:title", type: ISSUE) {
+        nodes {
+          title
+        }
+      }
+    }
+  `)
+  console.log(searchResult)
 }
 
 exec()

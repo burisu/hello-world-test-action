@@ -17,6 +17,7 @@ jobs:
         uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          issuekey: ${{ github.context.payload.inputes.issuekey }}
       # - name: Login
       #   uses: atlassian/gajira-login@master
       #   env:
