@@ -35,7 +35,7 @@ async function exec() {
       }
     }
   `)
-  console.log(searchResult)
+  console.log(searchResult.search.nodes[0])
 }
 
 exec()
