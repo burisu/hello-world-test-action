@@ -28,7 +28,9 @@ async function exec() {
     {
       search(last: 1, query: "is:pr ${issueKey} in:title", type: ISSUE) {
         nodes {
-          title
+          ... on Issue {
+            title
+          }
         }
       }
     }
