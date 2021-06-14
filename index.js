@@ -28,11 +28,9 @@ async function exec() {
       queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
       })
     const pullRequest = searchResult.search.nodes[0]
-    if (!(pullRequest.mergeable === 'MERGEABLE' && pullRequest.reviewDecision === 'APPROVED')) {
+    if (pullRequest.mergeable !== 'MERGEABLE' || pullRequest.reviewDecision === 'CHANGES_REQUESTED') {
       throw new Error('Pull Request is not ready for merging')
     }
-    core.setOutput('targetBranch', pullRequest.headRefName)
-    core.setOutput('canProceed', pullRequest.mergeable)
   } catch (error) {
     core.setFailed(error.toString())
   }
