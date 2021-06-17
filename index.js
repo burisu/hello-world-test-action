@@ -6,6 +6,7 @@ async function exec() {
     const token = core.getInput('token')
     const octokit = github.getOctokit(token)
     const issueKey = core.getInput('issueKey')
+    const mergeIn = core.getInput('mergeIn')
 
     const searchResult = await octokit.graphql(`
       query targetPullRequest($queryString: String!) {
@@ -19,6 +20,9 @@ async function exec() {
               reviewDecision
               checksResourcePath
               checksUrl
+              repository {
+                databaseId
+              }
             }
           }
         }
@@ -33,7 +37,16 @@ async function exec() {
       throw new Error('Pull Request is not ready for merging')
     }
 
-    core.setOutput('targetBranch', pullRequest.headRefName)
+    const searchResult = await octokit.graphql(`
+      mutation {
+        mergeBranch(authorEmail: 'pgolfier.pro@gmail.com', base: '${mergeIn}', clientMutationId: 'azerty', commitMessage: 'Merging ${pullRequest.headRefName} in ${mergeIn}', head: '${pullRequest.headRefName}', repositoryId: '${pullRequest.repository.databaseId}') {
+          clientMutationId
+          mergeCommit
+        }
+      }
+    `)
+
+    // core.setOutput('targetBranch', pullRequest.headRefName)
   } catch (error) {
     core.setFailed(error.toString())
   }
