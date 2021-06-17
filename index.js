@@ -29,7 +29,7 @@ async function exec() {
       })
     const pullRequest = searchResult.search.nodes[0]
     if (pullRequest.mergeable !== 'MERGEABLE' || pullRequest.reviewDecision === 'CHANGES_REQUESTED') {
-      console.error(`Mergeable : ${pullRequest.mergeable}, Review : ${reviewDecision}`)
+      console.error(`Mergeable : ${pullRequest.mergeable}, Review : ${pullRequest.reviewDecision}`)
       throw new Error('Pull Request is not ready for merging')
     }
 
