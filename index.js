@@ -41,7 +41,6 @@ async function exec() {
       mutation {
         mergeBranch(input: { authorEmail: "pgolfier.pro@gmail.com", base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.databaseId}" }) {
           clientMutationId
-          mergeCommit
         }
       }
     `)
