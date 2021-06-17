@@ -32,6 +32,8 @@ async function exec() {
       console.error(`Mergeable : ${pullRequest.mergeable}, Review : ${reviewDecision}`)
       throw new Error('Pull Request is not ready for merging')
     }
+
+    core.setOutput('targetBranch', pullRequest.headRefName)
   } catch (error) {
     core.setFailed(error.toString())
   }
