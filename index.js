@@ -32,10 +32,10 @@ async function exec() {
       queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
       })
     const pullRequest = searchResult.search.nodes[0]
-    if (pullRequest.mergeable !== 'MERGEABLE' || pullRequest.reviewDecision === 'CHANGES_REQUESTED') {
-      console.error(`Mergeable : ${pullRequest.mergeable}, Review : ${pullRequest.reviewDecision}`)
-      throw new Error('Pull Request is not ready for merging')
-    }
+    // if (pullRequest.mergeable !== 'MERGEABLE' || pullRequest.reviewDecision === 'CHANGES_REQUESTED') {
+    //   console.error(`Mergeable : ${pullRequest.mergeable}, Review : ${pullRequest.reviewDecision}`)
+    //   throw new Error('Pull Request is not ready for merging')
+    // }
 
     const mergeMutation = await octokit.graphql(`
       mutation {
