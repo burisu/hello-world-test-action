@@ -37,7 +37,7 @@ async function exec() {
       throw new Error('Pull Request is not ready for merging')
     }
 
-    const searchResult = await octokit.graphql(`
+    const mergeMutation = await octokit.graphql(`
       mutation {
         mergeBranch(authorEmail: 'pgolfier.pro@gmail.com', base: '${mergeIn}', clientMutationId: 'azerty', commitMessage: 'Merging ${pullRequest.headRefName} in ${mergeIn}', head: '${pullRequest.headRefName}', repositoryId: '${pullRequest.repository.databaseId}') {
           clientMutationId

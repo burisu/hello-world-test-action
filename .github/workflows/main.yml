@@ -23,13 +23,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           issueKey: ${{ github.context.payload.inputs.issueKey }}
 
-      - name: Merge development -> staging
-        uses: devmasx/merge-branch@v1.3.1
-        with:
-          type: now
-          from_branch: ${{ steps.findBranch.outputs.targetBranch }}
-          target_branch: ${{ github.context.payload.inputs.mergeIn }}
-          github_token: ${{ github.token }}
+      # - name: Merge development -> staging
+      #   uses: devmasx/merge-branch@v1.3.1
+      #   with:
+      #     type: now
+      #     from_branch: ${{ steps.findBranch.outputs.targetBranch }}
+      #     target_branch: ${{ github.context.payload.inputs.mergeIn }}
+      #     github_token: ${{ github.token }}
       - name: Login
         uses: atlassian/gajira-login@master
         env:
