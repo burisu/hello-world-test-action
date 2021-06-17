@@ -39,7 +39,7 @@ async function exec() {
 
     const mergeMutation = await octokit.graphql(`
       mutation {
-        mergeBranch(input: {authorEmail: 'pgolfier.pro@gmail.com', base: '${mergeIn}', commitMessage: 'Merging ${pullRequest.headRefName} in ${mergeIn}', head: '${pullRequest.headRefName}', repositoryId: '${pullRequest.repository.databaseId}'}) {
+        mergeBranch(input: { authorEmail: "pgolfier.pro@gmail.com", base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.databaseId}" }) {
           clientMutationId
           mergeCommit
         }
