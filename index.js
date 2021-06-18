@@ -16,11 +16,29 @@ async function exec () {
               headRefName
               baseRefName
               mergeable
+              mergeStateStatus
               reviewDecision
               checksResourcePath
               checksUrl
               repository {
                 id
+              }
+              commits (last: 1) {
+                nodes {
+                  commit {
+                    commitUrl
+                    oid
+                    status {
+                      state
+                      contexts {
+                        state
+                        targetUrl
+                        description
+                        context
+                      }
+                    }
+                  }
+                }
               }
             }
           }
