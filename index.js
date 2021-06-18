@@ -8,32 +8,32 @@ async function exec() {
     const issueKey = core.getInput('issueKey')
     const mergeIn = core.getInput('mergeIn')
 
-    console.log(issueKey, mergeIn)
+    // console.log(issueKey, mergeIn)
 
-    console.log(`
-      query targetPullRequest($queryString: String!) {
-        search(last: 1, query: $queryString, type: ISSUE) {
-          nodes {
-            ... on PullRequest {
-              title
-              headRefName
-              baseRefName
-              mergeable
-              reviewDecision
-              checksResourcePath
-              checksUrl
-              repository {
-                id
-              }
-            }
-          }
-        }
-      }
-    `,
-      {
-        queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
-      }
-    )
+    // console.log(`
+    //   query targetPullRequest($queryString: String!) {
+    //     search(last: 1, query: $queryString, type: ISSUE) {
+    //       nodes {
+    //         ... on PullRequest {
+    //           title
+    //           headRefName
+    //           baseRefName
+    //           mergeable
+    //           reviewDecision
+    //           checksResourcePath
+    //           checksUrl
+    //           repository {
+    //             id
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // `,
+    //   {
+    //     queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
+    //   }
+    // )
     const searchResult = await octokit.graphql(`
       query targetPullRequest($queryString: String!) {
         search(last: 1, query: $queryString, type: ISSUE) {
@@ -64,17 +64,17 @@ async function exec() {
     //   throw new Error('Pull Request is not ready for merging')
     // }
 
-    console.log(`
-      mutation {
-        mergeBranch(input: { authorEmail: "pgolfier.pro@gmail.com", base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.id}" }) {
-          clientMutationId
-        }
-      }
-    `)
+    // console.log(`
+    //   mutation {
+    //     mergeBranch(input: { authorEmail: "pgolfier.pro@gmail.com", base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.id}" }) {
+    //       clientMutationId
+    //     }
+    //   }
+    // `)
 
     const mergeMutation = await octokit.graphql(`
       mutation {
-        mergeBranch(input: { authorEmail: "pgolfier.pro@gmail.com", base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.id}" }) {
+        mergeBranch(input: { base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.id}" }) {
           clientMutationId
         }
       }
