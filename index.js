@@ -84,7 +84,7 @@ async function mergeBranch (pullRequest) {
 }
 
 async function mergePullRequest (pullRequest) {
-  return await octokit.graphql(`
+  await octokit.graphql(`
       mutation mergePullRequest($pullRequestId: String!){
         mergePullRequest(input: { pullRequestId: $pullRequestId }) {
           clientMutationId
@@ -93,6 +93,17 @@ async function mergePullRequest (pullRequest) {
     `,
   {
     pullRequestId: pullRequest.id
+  })
+
+  return octokit.graphql(`
+      mutation deleteRef($refId: String!){
+        deleteRef(input: { refId: $refId }) {
+          clientMutationId
+        }
+      }
+    `,
+  {
+    refId: pullRequest.headRef.id
   })
 }
 
