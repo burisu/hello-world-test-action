@@ -37,13 +37,7 @@ async function exec() {
     //   console.error(`Mergeable : ${pullRequest.mergeable}, Review : ${pullRequest.reviewDecision}`)
     //   throw new Error('Pull Request is not ready for merging')
     // }
-    console.log(`
-      mutation {
-        mergeBranch(input: { authorEmail: "pgolfier.pro@gmail.com", base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.id}" }) {
-          clientMutationId
-        }
-      }
-    `)
+
     const mergeMutation = await octokit.graphql(`
       mutation {
         mergeBranch(input: { authorEmail: "pgolfier.pro@gmail.com", base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.id}" }) {
@@ -51,6 +45,7 @@ async function exec() {
         }
       }
     `)
+    console.log(mergeMutation)
 
     // core.setOutput('targetBranch', pullRequest.headRefName)
   } catch (error) {
