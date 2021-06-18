@@ -17,28 +17,9 @@ async function exec () {
               baseRefName
               mergeable
               mergeStateStatus
-              reviewDecision
               checksResourcePath
-              checksUrl
               repository {
                 id
-              }
-              commits (last: 1) {
-                nodes {
-                  commit {
-                    commitUrl
-                    oid
-                    status {
-                      state
-                      contexts {
-                        state
-                        targetUrl
-                        description
-                        context
-                      }
-                    }
-                  }
-                }
               }
             }
           }
@@ -50,11 +31,8 @@ async function exec () {
     })
 
     const pullRequest = searchResult.search.nodes[0]
-    pullRequest.commit = pullRequest.commits.nodes[0].commit
-    delete pullRequest.commits
-    console.log(pullRequest)
-    if (pullRequest.mergeable !== 'MERGEABLE' || pullRequest.reviewDecision === 'CHANGES_REQUESTED') {
-      console.error(`Mergeable : ${pullRequest.mergeable}, Review : ${pullRequest.reviewDecision}`)
+    if (pullRequest.mergeable !== 'MERGEABLE' || pullRequest.mergeStateStatus !== 'CLEAN') {
+      console.error(`Mergeable : ${pullRequest.mergeable}, Merge state status : ${pullRequest.mergeStateStatus}`)
       throw new Error('Pull Request is not ready for merging')
     }
 
