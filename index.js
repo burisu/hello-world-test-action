@@ -50,7 +50,7 @@ async function exec () {
     })
 
     const pullRequest = searchResult.search.nodes[0]
-    pullRequest.commit = pullRequest.commits.nodes[0]
+    pullRequest.commit = pullRequest.commits.nodes[0].commit
     delete pullRequest.commits
     console.log(pullRequest)
     if (pullRequest.mergeable !== 'MERGEABLE' || pullRequest.reviewDecision === 'CHANGES_REQUESTED') {
