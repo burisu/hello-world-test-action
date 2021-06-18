@@ -1,13 +1,21 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: Get Pull Request
+description: Find a pull request with a Jira issue key
+branding:
+  icon: 'book-open'
+  color: 'blue'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  token:
+    description: Github token
     required: true
-    default: 'World'
+  issuekey:
+    description: Jira issue key
+    required: true
+  mergeIn:
+    description: Target Branch
+    required: true
 outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  branch:
+    description: Branch of the pull request
 runs:
   using: 'node12'
-  main: 'index.js'
+  main: './index.js'

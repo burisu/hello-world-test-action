@@ -1,15 +1,47 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+const core = require('@actions/core')
+const github = require('@actions/github')
 
-try {
-  // `who-to-greet` input defined in action metadata file
-  const nameToGreet = core.getInput('who-to-greet');
-  console.log(`Hello ${nameToGreet}!`);
-  const time = (new Date()).toTimeString();
-  core.setOutput("time", time);
-  // Get the JSON webhook payload for the event that triggered the workflow
-  const payload = JSON.stringify(github.context.payload, undefined, 2)
-  console.log(`The event payload: ${payload}`);
-} catch (error) {
-  core.setFailed(error.message);
+async function exec () {
+  try {
+    const token = core.getInput('token')
+    const octokit = github.getOctokit(token)
+    const issueKey = core.getInput('issueKey')
+    const mergeIn = core.getInput('mergeIn')
+    const searchResult = await octokit.graphql(`
+      query targetPullRequest($queryString: String!) {
+        search(last: 1, query: $queryString, type: ISSUE) {
+          nodes {
+            ... on PullRequest {
+              title
+              headRefName
+              baseRefName
+              mergeable
+              reviewDecision
+              checksResourcePath
+              checksUrl
+              repository {
+                id
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
+    }
+    )
+    const pullRequest = searchResult.search.nodes[0]
+    await octokit.graphql(`
+      mutation {
+        mergeBranch(input: { base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.id}" }) {
+          clientMutationId
+        }
+      }
+    `)
+  } catch (error) {
+    core.setFailed(error.toString())
+  }
 }
+
+exec()
