@@ -4,9 +4,12 @@ const token = core.getInput('token')
 const octokit = github.getOctokit(token, { previews: ['merge-info-preview'] })
 const issueKey = core.getInput('issueKey')
 const mergeIn = core.getInput('mergeIn')
+const mergePull = core.getInput('mergePull')
 
 async function exec () {
   try {
+    if (!mergeIn && !mergePull) throw new Error('Neither mergeIn or mergePull is specified')
+
     let pullRequest = await getPullRequest()
 
     let queryAttemptCount = 0
@@ -21,19 +24,11 @@ async function exec () {
       throw new Error(`Pull Request is not ready for merging in ${mergeIn}`)
     }
 
-    await octokit.graphql(`
-      mutation mergeBranch($base: String!, $commitMessage: String!, $head: String!, $repositoryId: String!){
-        mergeBranch(input: { base: $base, commitMessage: $commitMessage, head: $head, repositoryId: $repositoryId }) {
-          clientMutationId
-        }
-      }
-    `,
-    {
-      base: mergeIn,
-      commitMessage: `Merging ${pullRequest.headRefName} in ${mergeIn}`,
-      head: pullRequest.headRefName,
-      repositoryId: pullRequest.repository.id
-    })
+    if (mergePull) {
+      await mergePullRequest(pullRequest)
+    } else if (mergeIn) {
+      await mergeBranch(pullRequest)
+    }
   } catch (error) {
     core.setFailed(error.toString())
   }
@@ -47,8 +42,12 @@ async function getPullRequest () {
         search(last: 1, query: $queryString, type: ISSUE) {
           nodes {
             ... on PullRequest {
+              id
               title
-              headRefName
+              headRef {
+                id
+                name
+              }
               baseRefName
               mergeable
               mergeStateStatus
@@ -63,10 +62,38 @@ async function getPullRequest () {
     `,
   {
     queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
-  }
-  )
+  })
 
   return searchResult.search.nodes[0]
+}
+
+async function mergeBranch (pullRequest) {
+  return await octokit.graphql(`
+      mutation mergeBranch($base: String!, $commitMessage: String!, $head: String!, $repositoryId: String!){
+        mergeBranch(input: { base: $base, commitMessage: $commitMessage, head: $head, repositoryId: $repositoryId }) {
+          clientMutationId
+        }
+      }
+    `,
+  {
+    base: mergeIn,
+    commitMessage: `Merging ${pullRequest.headRef.name} in ${mergeIn}`,
+    head: pullRequest.headRef.name,
+    repositoryId: pullRequest.repository.id
+  })
+}
+
+async function mergePullRequest (pullRequest) {
+  return await octokit.graphql(`
+      mutation mergePullRequest($pullRequestId: String!){
+        mergePullRequest(input: { pullRequestId: $pullRequestId }) {
+          clientMutationId
+        }
+      }
+    `,
+  {
+    pullRequestId: pullRequest.id
+  })
 }
 
 function sleep (ms) {
