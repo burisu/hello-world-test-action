@@ -1,14 +1,16 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const token = core.getInput('token')
-const octokit = github.getOctokit(token)
+const octokit = github.getOctokit(token, { previews: ['merge-info-preview'] })
 const issueKey = core.getInput('issueKey')
 const mergeIn = core.getInput('mergeIn')
+
 async function exec () {
   try {
     let pullRequest = await getPullRequest()
+
     let queryAttemptCount = 0
-    while (pullRequest.mergeable === 'UNKNOWN' && queryAttemptCount < 10) {
+    while ([pullRequest.mergeable, pullRequest.mergeStateStatus].includes('UNKNOWN') && queryAttemptCount < 10) {
       await sleep(1000)
       pullRequest = await getPullRequest()
       queryAttemptCount++
@@ -16,16 +18,22 @@ async function exec () {
 
     if (pullRequest.mergeable !== 'MERGEABLE' || pullRequest.mergeStateStatus !== 'CLEAN') {
       console.error(`Mergeable : ${pullRequest.mergeable}, Merge state status : ${pullRequest.mergeStateStatus}`)
-      throw new Error('Pull Request is not ready for merging')
+      throw new Error(`Pull Request is not ready for merging in ${mergeIn}`)
     }
 
     await octokit.graphql(`
       mutation {
-        mergeBranch(input: { base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.id}" }) {
+        mergeBranch(input: { base: $base, commitMessage: $commitMessage, head: $head, repositoryId: $repositoryId }) {
           clientMutationId
         }
       }
-    `)
+    `,
+    {
+      base: mergeIn,
+      commitMessage: `Merging ${pullRequest.headRefName} in ${mergeIn}`,
+      head: pullRequest.headRefName,
+      repositoryId: pullRequest.repository.id
+    })
   } catch (error) {
     core.setFailed(error.toString())
   }
@@ -43,8 +51,7 @@ async function getPullRequest () {
               headRefName
               baseRefName
               mergeable
-              reviewDecision
-              checksResourcePath
+              mergeStateStatus
               checksUrl
               repository {
                 id
