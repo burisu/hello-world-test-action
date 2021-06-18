@@ -10,6 +10,9 @@ inputs:
   issuekey:
     description: Jira issue key
     required: true
+  mergeIn:
+    description: Target Branch
+    required: true
 outputs:
   branch:
     description: Branch of the pull request

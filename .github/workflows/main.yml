@@ -2,8 +2,11 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      issuekey:
+      issueKey:
         description: 'Jira issue key associated to Pull Request'
+        required: true
+      mergeIn:
+        description: 'The branch where the Pull Request should be merged'
         required: true
 
 jobs:
@@ -13,24 +16,35 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name:
+
+      - name: Custom action
         uses: ./
+        id: findBranch
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          issuekey: ${{ github.context.payload.inputes.issuekey }}
-      # - name: Login
-      #   uses: atlassian/gajira-login@master
-      #   env:
-      #     JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-      #     JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-      #     JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-      # - name: Find in commit messages
-      #   uses: atlassian/gajira-find-issue-key@master
-      #   id: find
+          issueKey: ${{ github.event.inputs.issueKey }}
+          mergeIn: ${{ github.event.inputs.mergeIn }}
+
+      # - name: Merge development -> staging
+      #   uses: devmasx/merge-branch@v1.3.1
       #   with:
-      #     string: ${{ github.event.inputs.issuekey }}
-      # - name: Transition issue
-      #   uses: atlassian/gajira-transition@master
-      #   with:
-      #     issue: ${{ steps.find.outputs.issue }}
-      #     transition: "EN COURS"
+      #     type: now
+      #     from_branch: ${{ steps.findBranch.outputs.targetBranch }}
+      #     target_branch: ${{ github.context.payload.inputs.mergeIn }}
+      #     github_token: ${{ github.token }}
+      - name: Login
+        uses: atlassian/gajira-login@master
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      - name: Find in commit messages
+        uses: atlassian/gajira-find-issue-key@master
+        id: find
+        with:
+          string: ${{ github.event.inputs.issuekey }}
+      - name: Transition issue
+        uses: atlassian/gajira-transition@master
+        with:
+          issue: ${{ steps.find.outputs.issue }}
+          transition: "EN COURS"
