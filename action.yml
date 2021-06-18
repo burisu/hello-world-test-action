@@ -14,9 +14,7 @@ inputs:
     description: Target Branch
   mergePull:
     description: Set it to true if willing to merge the PR and delete the headRef
-outputs:
-  branch:
-    description: Branch of the pull request
+
 runs:
   using: 'node12'
   main: './index.js'
