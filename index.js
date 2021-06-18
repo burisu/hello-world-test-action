@@ -1,7 +1,7 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 
-async function exec() {
+async function exec () {
   try {
     const token = core.getInput('token')
     const octokit = github.getOctokit(token)
@@ -27,9 +27,9 @@ async function exec() {
         }
       }
     `,
-      {
-        queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
-      }
+    {
+      queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
+    }
     )
     const pullRequest = searchResult.search.nodes[0]
     await octokit.graphql(`
