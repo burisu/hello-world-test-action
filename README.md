@@ -1,21 +1,24 @@
-# Hello world javascript action
+# Jira workflow
 
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
+This action merge branchs.
 
 ## Inputs
+### `Token`
 
-### `who-to-greet`
+**Required** Github token.
+### `issueKey`
 
-**Required** The name of the person to greet. Default `"World"`.
+**Required** The Jira issue key.
+### `mergeIn`
+
+**Required** The target branch.
 
 ## Outputs
-
-### `time`
-
-The time we greeted you.
 
 ## Example usage
 
 uses: actions/hello-world-javascript-action@v1.1
 with:
-  who-to-greet: 'Mona the Octocat'
+  token: ${{ secrets.GITHUB_TOKEN }}
+  issueKey: ${{ github.event.inputs.issueKey }}
+  mergeIn: ${{ github.event.inputs.mergeIn }}
