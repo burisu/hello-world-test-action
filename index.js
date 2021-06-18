@@ -4,7 +4,7 @@ const github = require('@actions/github')
 async function exec () {
   try {
     const token = core.getInput('token')
-    const octokit = github.getOctokit(token)
+    const octokit = github.getOctokit(token, { previews: ['merge-info-preview'] })
     const issueKey = core.getInput('issueKey')
     const mergeIn = core.getInput('mergeIn')
     const searchResult = await octokit.graphql(`
