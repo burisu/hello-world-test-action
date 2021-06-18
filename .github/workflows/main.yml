@@ -5,9 +5,13 @@ on:
       issueKey:
         description: 'Jira issue key associated to Pull Request'
         required: true
+      transitionName:
+        description: 'Jira transition name'
+        default: 'EN COURS'
       mergeIn:
         description: 'The branch where the Pull Request should be merged'
-        required: true
+      mergePull:
+        description: 'Set it to true if willing to merge the PR and delete the headRef'
 
 jobs:
   jira_workflow:
@@ -24,14 +28,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           issueKey: ${{ github.event.inputs.issueKey }}
           mergeIn: ${{ github.event.inputs.mergeIn }}
-
-      # - name: Merge development -> staging
-      #   uses: devmasx/merge-branch@v1.3.1
-      #   with:
-      #     type: now
-      #     from_branch: ${{ steps.findBranch.outputs.targetBranch }}
-      #     target_branch: ${{ github.context.payload.inputs.mergeIn }}
-      #     github_token: ${{ github.token }}
+          mergePull: ${{ github.event.inputs.mergePull }}
       - name: Login
         uses: atlassian/gajira-login@master
         env:
@@ -47,4 +44,4 @@ jobs:
         uses: atlassian/gajira-transition@master
         with:
           issue: ${{ steps.find.outputs.issue }}
-          transition: "EN COURS"
+          transition: ${{ github.event.inputs.transitionName }}
