@@ -22,8 +22,8 @@ jobs:
         id: findBranch
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          issueKey: ${{ github.context.payload.inputs.issueKey }}
-          mergeIn: ${{ github.context.payload.inputs.mergeIn }}
+          issueKey: ${{ github.event.inputs.issueKey }}
+          mergeIn: ${{ github.event.inputs.mergeIn }}
 
       # - name: Merge development -> staging
       #   uses: devmasx/merge-branch@v1.3.1
