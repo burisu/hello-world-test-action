@@ -29,9 +29,14 @@ async function exec () {
     `,
     {
       queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
-    }
-    )
+    })
+
     const pullRequest = searchResult.search.nodes[0]
+    if (pullRequest.mergeable !== 'MERGEABLE' || pullRequest.reviewDecision === 'CHANGES_REQUESTED') {
+      console.error(`Mergeable : ${pullRequest.mergeable}, Review : ${pullRequest.reviewDecision}`)
+      throw new Error('Pull Request is not ready for merging')
+    }
+
     await octokit.graphql(`
       mutation {
         mergeBranch(input: { base: "${mergeIn}", commitMessage: "Merging ${pullRequest.headRefName} in ${mergeIn}", head: "${pullRequest.headRefName}", repositoryId: "${pullRequest.repository.id}" }) {
