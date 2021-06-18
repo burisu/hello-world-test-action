@@ -8,6 +8,32 @@ async function exec() {
     const issueKey = core.getInput('issueKey')
     const mergeIn = core.getInput('mergeIn')
 
+    console.log(issueKey, mergeIn)
+
+    console.log(`
+      query targetPullRequest($queryString: String!) {
+        search(last: 1, query: $queryString, type: ISSUE) {
+          nodes {
+            ... on PullRequest {
+              title
+              headRefName
+              baseRefName
+              mergeable
+              reviewDecision
+              checksResourcePath
+              checksUrl
+              repository {
+                id
+              }
+            }
+          }
+        }
+      }
+    `,
+      {
+        queryString: `is:pr ${issueKey} in:title repo:${github.context.payload.repository.full_name}`
+      }
+    )
     const searchResult = await octokit.graphql(`
       query targetPullRequest($queryString: String!) {
         search(last: 1, query: $queryString, type: ISSUE) {
