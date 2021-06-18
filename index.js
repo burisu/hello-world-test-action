@@ -22,7 +22,7 @@ async function exec () {
     }
 
     await octokit.graphql(`
-      mutation {
+      mutation mergeBranch($base: String!, $commitMessage: String!, $head: String!, $repositoryId: String!){
         mergeBranch(input: { base: $base, commitMessage: $commitMessage, head: $head, repositoryId: $repositoryId }) {
           clientMutationId
         }
