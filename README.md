@@ -17,8 +17,10 @@ This action merge branchs.
 
 ## Example usage
 
+```yaml
 uses: actions/hello-world-javascript-action@v1.1
 with:
   token: ${{ secrets.GITHUB_TOKEN }}
   issueKey: ${{ github.event.inputs.issueKey }}
   mergeIn: ${{ github.event.inputs.mergeIn }}
+```
